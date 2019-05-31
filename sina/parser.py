@@ -1,7 +1,6 @@
 import json
-import csv
-
-
+from urllib.parse import urlparse, urlsplit
+import urllib
 
 
 def parse_home_data(content):
@@ -10,7 +9,7 @@ def parse_home_data(content):
     if "{" in part1:
         index = part1.index('{')
         str_data = content[index:-1]
-        print("str_data", str_data)
+        # print("解析的json", str_data)
         json_data = json.loads(str_data)
         result = []
         if "data" in json_data:
@@ -35,3 +34,10 @@ def parse_home_data(content):
     else:
         print("home data: ", content)
         return []
+
+
+def get_channel(url):
+    result = urlsplit(url)
+    query = dict(urllib.parse.parse_qsl(result.query))
+    channel = query['top_cat']
+    return channel

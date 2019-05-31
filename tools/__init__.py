@@ -4,7 +4,9 @@ from requests.exceptions import RequestException
 import time
 import os
 import csv
+from urllib.parse import urlparse
 
+times = [0.8, 1.5, 0.5, 1, 2.3, 1.8, 1, 2, 1.5, 0.5, 3, 1, 0.5, 1]
 
 def __get_page(index_url):
     print("access url: ", index_url)
@@ -27,14 +29,16 @@ def get_html(index_url, try_times=3):
         html = __get_page(index_url=index_url)
         if html != None:
             return html
-        breakTime = random.choice([0.8, 1.5, 0.5, 1, 2.3, 1.8, 1, 2, 1.5, 0.5, 3, 1, 0.5, 1])
+        breakTime = random.choice(times)
         time.sleep(breakTime)
 
-def save_data_txt(file_path, name, data):
+def mkdir(path):
     try:
-        os.makedirs(file_path)
+        os.makedirs(path)
     except:
         pass
+
+def save_data_txt(file_path, name, data):
     with open(file_path + name, 'w') as file:
         file.write(data)
 
@@ -43,18 +47,45 @@ def to_csv(path, file_name, data):
     """
     :param path: 保存路径
     :param file_name: 文件名字
-    :param res_queue:
+    :param data: [ ["name", "age"] ]
     :return:
     """
     if data == None:
         print("无数据保存")
     else:
-        with open(path + file_name, mode='a', newline='', encoding='utf-8') as csvfile:
+        with open(path + file_name, mode='w', newline='', encoding='utf-8') as csvfile:
             csv_write = csv.writer(csvfile, dialect="excel")
             # csv_write.writerow(["name", "age"])
             for news in data:
                 csv_write.writerow(news)
 
+
+def all_index(data, v):
+    result = []
+    count = 0
+    for value in data:
+        if value == v:
+            result.append(count)
+        count += 1
+    return result
+
+
+def load_data_from_txt(file):
+    result = set()
+    with open(file, mode="r") as text:
+        for line in text.readlines():
+            tmp = line.strip()
+            path = urlparse(tmp).path
+            indexes = all_index(path, "/")
+            start, second = indexes[0], indexes[1]
+            channel = path[start+1 : second]
+            result.add(channel)
+    print(result)
+
+def formate_time(time):
+    if time < 10:
+        return "0" + str(time)
+    return str(time)
+
 if __name__ == "__main__":
-    url = "https://news.sina.com.cn/c/2019-05-29/doc-ihvhiews5310818.shtml"
-    __get_page(url)
+    print(formate_time(1))
