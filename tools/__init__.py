@@ -5,11 +5,26 @@ import time
 import os
 import csv
 from urllib.parse import urlparse
+from multiprocessing import cpu_count
+cpu_cores = cpu_count()
 
-times = [0.8, 1.5, 0.5, 1, 2.3, 1.8, 1, 2, 1.5, 0.5, 3, 1, 0.5, 1]
+times = [0.8, 0.5, 0.1, 0, 1, 0.3, 0.1, 0.2]
+
+def group_thread(size):
+    gs = []
+    interval = (size // cpu_cores)
+    plus = size % cpu_cores
+    for i in range(0, cpu_cores):
+        if i == (cpu_cores - 1) and plus != 0:
+            gs.append([end, size])
+        else:
+            start = i * interval
+            end = start + interval
+            gs.append([start, end])
+    return gs
 
 def __get_page(index_url):
-    print("access url: ", index_url)
+    # print("access url: ", index_url)
     headers = {'accept-language': 'zh-CN,zh;q=0.9,en;q=0.8'}
     try:
         response = requests.get(index_url, headers=headers)
@@ -32,11 +47,13 @@ def get_html(index_url, try_times=3):
         breakTime = random.choice(times)
         time.sleep(breakTime)
 
+
 def mkdir(path):
     try:
         os.makedirs(path)
     except:
         pass
+
 
 def save_data_txt(file_path, name, data):
     with open(file_path + name, 'w') as file:
@@ -78,14 +95,16 @@ def load_data_from_txt(file):
             path = urlparse(tmp).path
             indexes = all_index(path, "/")
             start, second = indexes[0], indexes[1]
-            channel = path[start+1 : second]
+            channel = path[start + 1: second]
             result.add(channel)
     print(result)
+
 
 def formate_time(time):
     if time < 10:
         return "0" + str(time)
     return str(time)
+
 
 if __name__ == "__main__":
     print(formate_time(1))

@@ -4,7 +4,7 @@ import time
 import random
 from urllib.parse import urlparse
 import pandas
-from math import ceil
+from math import ceil, floor
 from tools import times
 import pandas as pd
 import json
@@ -92,4 +92,21 @@ def load_data(incsv, outpath=None):
 if __name__ == "__main__":
     out_path = "F:/scrapy/sina_data1.1.0/comments_data/resource/5/"
     incsv = "F:/scrapy/sina_data1.1.0/comments_data_url/all_data_5.csv"
-    load_data(incsv, out_path)
+    # load_data(incsv, out_path)
+
+    cpu_cores = 8
+    url_info = pd.read_csv(incsv, header=None)
+    size, cols = url_info.shape
+    size = 88
+    yushu = size % cpu_cores
+    interval = size // cpu_cores
+    if yushu == 0:
+        for i in range(cpu_cores):
+            start = i * interval
+            end = start + interval
+            print((start, end))
+    else:
+        for i in range(cpu_cores):
+            start = i * interval
+            end = start + interval
+            print((start, end))

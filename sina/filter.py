@@ -12,21 +12,11 @@ from selenium import webdriver
 
 times = [0.8, 1.5, 0.5, 1, 2.3, 1.8, 1, 2, 1.5, 0.5, 3, 1, 0.5, 1]
 
+'''用户获取带有评论的url
+'''
+
+
 def comments_num(comments_url):
-    """ js 渲染  从评论页面获取 """
-    # html = get_html(comments_url)
-    driver = webdriver.PhantomJS()  # 渲染
-    driver.get(comments_url)
-    html = driver.page_source
-    driver.close()
-    doc = pq(html)
-    text = doc.find(".hd.clearfix").text()
-    i = text.index('条')
-    num = text[:i]
-    return int(num)
-
-
-def comments_num2(comments_url):
     """ js 渲染  从评论页面获取 """
     # html = get_html(comments_url)
     driver = webdriver.PhantomJS()  # 渲染
@@ -63,11 +53,11 @@ def urls_with_reviews(news_url, channel):
     id = id[1:]  # 去掉i 新闻id
     middle = "channel=" + channel + "&newsid=comos-" + id
     comments_url = "http://comment5.news.sina.com.cn/comment/skin/default.html?" + middle + "&group=0"  # 新闻评论网页
-    data_url = url_with_reviews_data(channel=channel, id=id) # 获取新闻接口
+    data_url = url_with_reviews_data(channel=channel, id=id)  # 获取新闻评论数据的接口
     data = get_html(data_url)
     data = json.loads(data)
     try:
-        num = data["result"]["count"]["show"]
+        num = data["result"]["count"]["show"]  # 获取评论的数量
     except Exception as e:
         raise SinaException(data_url)
     if int(num) > 0:
@@ -84,12 +74,12 @@ def get_news_url_from_csv(incsv_file, except_url):
     data = pandas.read_csv(incsv_file, header=None)
     result = []
     for _, (url, channel) in data.iterrows():
-        channel_ = channels[channel] # 所在新闻了类型
+        channel_ = channels[channel]  # 所在新闻了类型
         try:
             num_data_url = urls_with_reviews(url, channel_)  # [num, data_url]
         except SinaException as e:
             tmp = {"访问的新闻网址出错": [url], "新闻评论数据接口": [e.errorObj]}
-            pandas.DataFrame(tmp).to_csv(except_url, mode='a', header=0, index=0)
+            pandas.DataFrame(tmp).to_csv(except_url, mode='a', header=0, index=0) # 异常新闻的保存
         if num_data_url != None:
             result.append(num_data_url)
     return result  # [[num, data_url]]
@@ -125,7 +115,7 @@ if __name__ == "__main__":
     print(data.shape)
     d1 = list(data[0])
     d2 = list(data[1])
-
-    data = pandas.DataFrame({"channel": d1, "url": d2})
-    data.to_csv("E:/dddd.csv", index=0, header=0)
-    main()
+    #
+    # data = pandas.DataFrame({"channel": d1, "url": d2})
+    # data.to_csv("E:/dddd.csv", index=0, header=0)
+    # main()

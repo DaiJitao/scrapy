@@ -3,7 +3,7 @@ from sina.parser import parse_home_data, get_channel
 import pandas as pd
 
 '''
-获取所有新闻的url
+获取所有新闻的url， 共八大类新闻
 '''
 
 
@@ -133,7 +133,7 @@ def load_url(time):
 
 
 def main():
-    month = '04'
+    month = '04' # 四月份
     for i in range(1, 31):
         if i < 10:
             date = '2019' + month + '0' + str(i)
